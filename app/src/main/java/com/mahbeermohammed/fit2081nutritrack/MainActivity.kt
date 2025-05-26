@@ -61,7 +61,7 @@ fun NutriTrackApp() {
             // BottomNav Screens
             composable("home") { HomeScreen(navController) }
             composable("insights") { InsightsScreen(navController) }
-            composable("nutriCoach") { NutriCoachScreen(navController) }
+            composable("nutriCoach") { NutriCoachScreen() }
             composable("settings") { SettingsScreen(navController) }
         }
     }
