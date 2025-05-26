@@ -12,5 +12,9 @@ interface FoodIntakeDao {
 
     @Query("SELECT * FROM FoodIntake WHERE userId = :userId")
     suspend fun getByUserId(userId: String): List<FoodIntake>
+
+    @Query("SELECT * FROM FoodIntake WHERE userId = :userId ORDER BY id DESC LIMIT 1")
+    suspend fun getLatestFoodIntakeForUser(userId: String): FoodIntake?
+
 }
 

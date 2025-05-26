@@ -2,9 +2,10 @@ package com.mahbeermohammed.fit2081nutritrack.screens
 
 import android.app.TimePickerDialog
 import android.content.Context
-import android.widget.TimePicker
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -17,9 +18,8 @@ import androidx.navigation.NavController
 import com.mahbeermohammed.fit2081nutritrack.AppDatabase
 import com.mahbeermohammed.fit2081nutritrack.FoodIntake
 import kotlinx.coroutines.launch
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import java.util.*
+
 @Composable
 fun QuestionnaireScreen(navController: NavController) {
     val context = LocalContext.current
@@ -40,6 +40,17 @@ fun QuestionnaireScreen(navController: NavController) {
     var grainsServings by remember { mutableStateOf("") }
     var meatServings by remember { mutableStateOf("") }
     var dairyServings by remember { mutableStateOf("") }
+
+    var showValidationError by remember { mutableStateOf(false) }
+
+    val isFormValid = breakfastTime.isNotEmpty() &&
+            lunchTime.isNotEmpty() &&
+            dinnerTime.isNotEmpty() &&
+            fruitServings.isNotEmpty() &&
+            vegetablesServings.isNotEmpty() &&
+            grainsServings.isNotEmpty() &&
+            meatServings.isNotEmpty() &&
+            dairyServings.isNotEmpty()
 
     Column(
         modifier = Modifier
@@ -62,26 +73,34 @@ fun QuestionnaireScreen(navController: NavController) {
         NumberInputField(label = "Meat/Alternatives Servings", value = meatServings) { meatServings = it }
         NumberInputField(label = "Dairy Servings", value = dairyServings) { dairyServings = it }
 
+        if (showValidationError && !isFormValid) {
+            Text("Please fill out all fields.", color = MaterialTheme.colorScheme.error)
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
             onClick = {
-                scope.launch {
-                    dao.insert(
-                        FoodIntake(
-                            userId = userId,
-                            persona = persona,
-                            breakfastTime = breakfastTime,
-                            lunchTime = lunchTime,
-                            dinnerTime = dinnerTime,
-                            fruit = fruitServings,
-                            vegetables = vegetablesServings,
-                            grains = grainsServings,
-                            meat = meatServings,
-                            dairy = dairyServings
+                if (!isFormValid) {
+                    showValidationError = true
+                } else {
+                    scope.launch {
+                        dao.insert(
+                            FoodIntake(
+                                userId = userId,
+                                persona = persona,
+                                breakfastTime = breakfastTime,
+                                lunchTime = lunchTime,
+                                dinnerTime = dinnerTime,
+                                fruit = fruitServings,
+                                vegetables = vegetablesServings,
+                                grains = grainsServings,
+                                meat = meatServings,
+                                dairy = dairyServings
+                            )
                         )
-                    )
-                    navController.navigate("insights")
+                        navController.navigate("insights")
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth()
@@ -121,12 +140,10 @@ fun DropdownMenuField(label: String, options: List<String>, onSelect: (String) -
     }
 }
 
-
 @Composable
 fun TimeInputField(label: String, time: String, onTimeSelected: (String) -> Unit) {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
-
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val minute = calendar.get(Calendar.MINUTE)
 
@@ -150,6 +167,7 @@ fun TimeInputField(label: String, time: String, onTimeSelected: (String) -> Unit
         singleLine = true
     )
 }
+
 @Composable
 fun NumberInputField(label: String, value: String, onValueChange: (String) -> Unit) {
     OutlinedTextField(
@@ -163,5 +181,3 @@ fun NumberInputField(label: String, value: String, onValueChange: (String) -> Un
         modifier = Modifier.fillMaxWidth()
     )
 }
-
-
