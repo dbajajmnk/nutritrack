@@ -68,7 +68,10 @@ fun SettingsScreen(navController: NavHostController) {
             label = "Logout",
             icon = Icons.Default.ExitToApp,
             onClick = {
-                navController.navigate("login") {
+                // Clear saved userId to logout
+                sharedPrefs.edit().remove("userId").apply()
+                // Navigate to welcome/login, clear backstack
+                navController.navigate("welcome") {
                     popUpTo(0) { inclusive = true }
                 }
             }

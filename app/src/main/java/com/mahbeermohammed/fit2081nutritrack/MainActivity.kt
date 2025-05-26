@@ -26,6 +26,8 @@ class MainActivity : ComponentActivity() {
 fun NutriTrackApp() {
     val navController = rememberNavController()
     val context = LocalContext.current
+    val sharedPrefs = context.getSharedPreferences("NutriPrefs", 0)
+    val savedUserId = sharedPrefs.getString("userId", null)
 
     LaunchedEffect(Unit) {
         val db = AppDatabase.getDatabase(context)
@@ -41,6 +43,22 @@ fun NutriTrackApp() {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    LaunchedEffect(savedUserId) {
+        if (savedUserId != null) {
+            if (navController.currentDestination?.route != "home") {
+                navController.navigate("home") {
+                    popUpTo("welcome") { inclusive = true }
+                }
+            }
+        } else {
+            if (navController.currentDestination?.route != "welcome") {
+                navController.navigate("welcome") {
+                    popUpTo(0)
+                }
+            }
+        }
+    }
+
     Scaffold(
         bottomBar = {
             if (currentRoute in bottomNavRoutes) {
@@ -50,7 +68,7 @@ fun NutriTrackApp() {
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "welcome",
+            startDestination = if (savedUserId != null) "home" else "welcome",
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("welcome") { WelcomeScreen(navController) }
