@@ -80,6 +80,7 @@ fun NutriTrackApp() {
             composable("insights") { InsightsScreen(navController) }
             composable("nutriCoach") { NutriCoachScreen() }
             composable("settings") { SettingsScreen(navController) }
+            composable("clinicianLogin") { ClinicianLoginScreen(navController) }
         }
     }
 }
