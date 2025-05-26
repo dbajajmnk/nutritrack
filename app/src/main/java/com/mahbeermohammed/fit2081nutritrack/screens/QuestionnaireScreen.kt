@@ -1,7 +1,9 @@
 package com.mahbeermohammed.fit2081nutritrack.screens
 
-import android.annotation.SuppressLint
+import android.app.TimePickerDialog
 import android.content.Context
+import android.widget.TimePicker
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -12,14 +14,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import kotlinx.coroutines.launch
 import com.mahbeermohammed.fit2081nutritrack.AppDatabase
 import com.mahbeermohammed.fit2081nutritrack.FoodIntake
+import kotlinx.coroutines.launch
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
-
-
-@SuppressLint("MutableCollectionMutableState")
+import java.util.*
 @Composable
 fun QuestionnaireScreen(navController: NavController) {
     val context = LocalContext.current
@@ -30,14 +30,16 @@ fun QuestionnaireScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
 
     var persona by remember { mutableStateOf("Active Teen") }
+
     var breakfastTime by remember { mutableStateOf("") }
     var lunchTime by remember { mutableStateOf("") }
     var dinnerTime by remember { mutableStateOf("") }
-    var fruit by remember { mutableStateOf("") }
-    var vegetables by remember { mutableStateOf("") }
-    var grains by remember { mutableStateOf("") }
-    var meat by remember { mutableStateOf("") }
-    var dairy by remember { mutableStateOf("") }
+
+    var fruitServings by remember { mutableStateOf("") }
+    var vegetablesServings by remember { mutableStateOf("") }
+    var grainsServings by remember { mutableStateOf("") }
+    var meatServings by remember { mutableStateOf("") }
+    var dairyServings by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -48,37 +50,42 @@ fun QuestionnaireScreen(navController: NavController) {
     ) {
         Text("Questionnaire", fontSize = 24.sp, fontWeight = FontWeight.Bold)
 
-        DropdownMenuField("Persona", listOf("Active Teen", "Adult Male", "Adult Female")) { persona = it }
+        DropdownMenuField("Select Persona", listOf("Active Teen", "Adult Male", "Adult Female")) { persona = it }
 
-        OutlinedTextField(value = breakfastTime, onValueChange = { breakfastTime = it }, label = { Text("Breakfast Time") })
-        OutlinedTextField(value = lunchTime, onValueChange = { lunchTime = it }, label = { Text("Lunch Time") })
-        OutlinedTextField(value = dinnerTime, onValueChange = { dinnerTime = it }, label = { Text("Dinner Time") })
+        TimeInputField("Breakfast Time", breakfastTime) { breakfastTime = it }
+        TimeInputField("Lunch Time", lunchTime) { lunchTime = it }
+        TimeInputField("Dinner Time", dinnerTime) { dinnerTime = it }
 
-        OutlinedTextField(value = fruit, onValueChange = { fruit = it }, label = { Text("Fruits (e.g. 2 servings)") })
-        OutlinedTextField(value = vegetables, onValueChange = { vegetables = it }, label = { Text("Vegetables") })
-        OutlinedTextField(value = grains, onValueChange = { grains = it }, label = { Text("Grains") })
-        OutlinedTextField(value = meat, onValueChange = { meat = it }, label = { Text("Meat/Alternatives") })
-        OutlinedTextField(value = dairy, onValueChange = { dairy = it }, label = { Text("Dairy") })
+        NumberInputField(label = "Fruit Servings (e.g. 2)", value = fruitServings) { fruitServings = it }
+        NumberInputField(label = "Vegetable Servings", value = vegetablesServings) { vegetablesServings = it }
+        NumberInputField(label = "Grain Servings", value = grainsServings) { grainsServings = it }
+        NumberInputField(label = "Meat/Alternatives Servings", value = meatServings) { meatServings = it }
+        NumberInputField(label = "Dairy Servings", value = dairyServings) { dairyServings = it }
 
-        Button(onClick = {
-            scope.launch {
-                dao.insert(
-                    FoodIntake(
-                        userId = userId,
-                        persona = persona,
-                        breakfastTime = breakfastTime,
-                        lunchTime = lunchTime,
-                        dinnerTime = dinnerTime,
-                        fruit = fruit,
-                        vegetables = vegetables,
-                        grains = grains,
-                        meat = meat,
-                        dairy = dairy
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = {
+                scope.launch {
+                    dao.insert(
+                        FoodIntake(
+                            userId = userId,
+                            persona = persona,
+                            breakfastTime = breakfastTime,
+                            lunchTime = lunchTime,
+                            dinnerTime = dinnerTime,
+                            fruit = fruitServings,
+                            vegetables = vegetablesServings,
+                            grains = grainsServings,
+                            meat = meatServings,
+                            dairy = dairyServings
+                        )
                     )
-                )
-                navController.navigate("insights")
-            }
-        }) {
+                    navController.navigate("insights")
+                }
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Submit & View Insights")
         }
     }
@@ -113,3 +120,48 @@ fun DropdownMenuField(label: String, options: List<String>, onSelect: (String) -
         }
     }
 }
+
+
+@Composable
+fun TimeInputField(label: String, time: String, onTimeSelected: (String) -> Unit) {
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+
+    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+    val minute = calendar.get(Calendar.MINUTE)
+
+    OutlinedTextField(
+        value = time,
+        onValueChange = {},
+        label = { Text(label) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                TimePickerDialog(
+                    context,
+                    { _, selectedHour, selectedMinute ->
+                        val formatted = "%02d:%02d".format(selectedHour, selectedMinute)
+                        onTimeSelected(formatted)
+                    },
+                    hour, minute, true
+                ).show()
+            },
+        readOnly = true,
+        singleLine = true
+    )
+}
+@Composable
+fun NumberInputField(label: String, value: String, onValueChange: (String) -> Unit) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = { input ->
+            if (input.all { it.isDigit() }) {
+                onValueChange(input)
+            }
+        },
+        label = { Text(label) },
+        modifier = Modifier.fillMaxWidth()
+    )
+}
+
+

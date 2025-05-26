@@ -22,7 +22,7 @@ import androidx.navigation.compose.rememberNavController
 fun SettingsScreen(navController: NavHostController) {
     val context = LocalContext.current
     val sharedPrefs = context.getSharedPreferences("NutriPrefs", 0)
-    val userName = sharedPrefs.getString("userName", "Unknown User") ?: "Unknown User"
+    val userName = sharedPrefs.getString("name", "Unknown User") ?: "Unknown User"
     val phoneNumber = sharedPrefs.getString("phoneNumber", "Unknown Phone") ?: "Unknown Phone"
     val userId = sharedPrefs.getString("userId", "Unknown ID") ?: "Unknown ID"
 

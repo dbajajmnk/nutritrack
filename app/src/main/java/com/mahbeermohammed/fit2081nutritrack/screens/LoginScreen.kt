@@ -63,21 +63,29 @@ fun LoginScreen(navController: NavHostController) {
 
                     if (patient != null && patient.password == hashedInput) {
                         val prefs = context.getSharedPreferences("NutriPrefs", Context.MODE_PRIVATE)
-                        prefs.edit().putString("userId", userId).apply()
+                        prefs.edit()
+                            .putString("userId", patient.userId)
+                            .putString("name", patient.name)
+                            .putString("phoneNumber", patient.phoneNumber)
+                            .apply()
                         navController.navigate("home")
                     } else {
                         error = true
                     }
                 }
             },
-            modifier = Modifier.fillMaxWidth().height(56.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
         ) {
             Text("Continue")
         }
 
         Button(
             onClick = { navController.navigate("register") },
-            modifier = Modifier.fillMaxWidth().height(56.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
         ) {
             Text("Register")
         }

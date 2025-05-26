@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun RegisterScreen(navController: NavHostController) {
+    var name by remember { mutableStateOf("") }
     var userId by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -39,6 +40,13 @@ fun RegisterScreen(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Register", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+
+        OutlinedTextField(
+            value = name,
+            onValueChange = { name = it },
+            label = { Text("Name") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
         OutlinedTextField(
             value = userId,
@@ -75,7 +83,7 @@ fun RegisterScreen(navController: NavHostController) {
         Button(
             onClick = {
                 scope.launch {
-                    if (userId.isBlank() || phoneNumber.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
+                    if (name.isBlank() || userId.isBlank() || phoneNumber.isBlank() || password.isBlank() || confirmPassword.isBlank()) {
                         errorText = "All fields are required"
                         return@launch
                     }
@@ -91,13 +99,17 @@ fun RegisterScreen(navController: NavHostController) {
                             userId = userId,
                             phoneNumber = phoneNumber,
                             password = PasswordUtils.hashPassword(password),
-                            name = userId,
+                            name = name,
                             sex = "Unspecified"
                         )
                         patientDao.insert(newPatient)
 
                         val prefs = context.getSharedPreferences("NutriPrefs", Context.MODE_PRIVATE)
-                        prefs.edit().putString("userId", userId).apply()
+                        prefs.edit()
+                            .putString("userId", userId)
+                            .putString("name", name)
+                            .putString("phoneNumber", phoneNumber)
+                            .apply()
 
                         navController.navigate("home")
                     } else {
