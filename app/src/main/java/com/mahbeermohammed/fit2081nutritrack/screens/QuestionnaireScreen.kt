@@ -2,8 +2,12 @@ package com.mahbeermohammed.fit2081nutritrack.screens
 
 import android.app.TimePickerDialog
 import android.content.Context
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.*
@@ -12,9 +16,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.mahbeermohammed.fit2081nutritrack.AppDatabase
 import com.mahbeermohammed.fit2081nutritrack.FoodIntake
 import kotlinx.coroutines.launch
@@ -55,6 +61,7 @@ fun QuestionnaireScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
         horizontalAlignment = Alignment.Start
@@ -147,25 +154,35 @@ fun TimeInputField(label: String, time: String, onTimeSelected: (String) -> Unit
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
     val minute = calendar.get(Calendar.MINUTE)
 
-    OutlinedTextField(
-        value = time,
-        onValueChange = {},
-        label = { Text(label) },
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                TimePickerDialog(
-                    context,
-                    { _, selectedHour, selectedMinute ->
-                        val formatted = "%02d:%02d".format(selectedHour, selectedMinute)
-                        onTimeSelected(formatted)
-                    },
-                    hour, minute, true
-                ).show()
-            },
-        readOnly = true,
-        singleLine = true
-    )
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .clickable {
+            TimePickerDialog(
+                context,
+                { _, selectedHour, selectedMinute ->
+                    val formatted = "%02d:%02d".format(selectedHour, selectedMinute)
+                    onTimeSelected(formatted)
+                },
+                hour, minute, true
+            ).show()
+        }
+    ) {
+        Text(label, style = MaterialTheme.typography.labelSmall)
+        Text(
+            text = if (time.isEmpty()) "Tap to set time" else time,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+                .heightIn(min = 48.dp)
+                .border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.outline,
+                    shape = MaterialTheme.shapes.medium
+                )
+                .padding(horizontal = 8.dp, vertical = 12.dp),
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
 }
 
 @Composable
@@ -180,4 +197,11 @@ fun NumberInputField(label: String, value: String, onValueChange: (String) -> Un
         label = { Text(label) },
         modifier = Modifier.fillMaxWidth()
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun QuestionnaireScreenPreview() {
+    val navController = rememberNavController()
+    QuestionnaireScreen(navController = navController)
 }

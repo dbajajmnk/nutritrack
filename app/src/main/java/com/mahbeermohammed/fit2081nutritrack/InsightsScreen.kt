@@ -89,9 +89,8 @@ fun InsightsScreen(navController: NavController) {
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Share with someone")
             }
-
             Button(
-                onClick = { navController.navigate("questionnaire") },
+                onClick = { navController.navigate("nutricoach") },
                 modifier = Modifier.weight(1f)
             ) {
                 Text("Improve my diet")
