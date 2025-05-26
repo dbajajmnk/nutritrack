@@ -17,6 +17,9 @@ interface PatientDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(patients: List<Patient>)
 
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insert(patient: Patient)
+
     // Used in login screen to fetch patient by userId
     @Query("SELECT * FROM patients WHERE userId = :userId")
     suspend fun getPatientById(userId: String): Patient?
