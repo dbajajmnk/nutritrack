@@ -1,7 +1,6 @@
 package com.mahbeermohammed.fit2081nutritrack
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -11,6 +10,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.mahbeermohammed.fit2081nutritrack.components.BottomNavigationBar
 
 @Composable
 fun HomeScreen(navController: NavController) {
@@ -29,40 +30,47 @@ fun HomeScreen(navController: NavController) {
         0.0
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Top
-    ) {
-        Text("Hello, User $userId", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("Your Food Quality Score:")
-        Text(
-            text = "${score.toInt()} / 100",
-            fontSize = 36.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text("This score reflects how well your diet aligns with the Australian Dietary Guidelines.")
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Button(onClick = {
-            navController.navigate("insights")
-        }, modifier = Modifier.fillMaxWidth()) {
-            Text("View Insights")
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(navController = navController)
         }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp)
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.Top
+        ) {
+            Text("Hello, User $userId", fontSize = 24.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(12.dp))
+            Text("Your Food Quality Score:")
+            Text(
+                text = "${score.toInt()} / 100",
+                fontSize = 36.sp,
+                fontWeight = FontWeight.Bold
+            )
 
-        Button(onClick = {
-            navController.navigate("questionnaire")
-        }, modifier = Modifier.fillMaxWidth()) {
-            Text("Edit Questionnaire")
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text("This score reflects how well your diet aligns with the Australian Dietary Guidelines.")
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(onClick = {
+                navController.navigate("insights")
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text("View Insights")
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Button(onClick = {
+                navController.navigate("questionnaire")
+            }, modifier = Modifier.fillMaxWidth()) {
+                Text("Edit Questionnaire")
+            }
         }
     }
 }
