@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -92,14 +93,14 @@ fun NutriCoachScreen(viewModel: NutriCoachViewModel = viewModel()) {
             }
         }
 
-        FloatingActionButton(
-            onClick = { /* TODO: Handle show all tips action */ },
+        ExtendedFloatingActionButton(
+            text = { Text("Show all tips") },
+            icon = { Icon(Icons.Default.Done, contentDescription = "Done") },
+            onClick = { /* TODO */ },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
-        ) {
-            Text("Show all tips")
-        }
+        )
     }
 }
 
