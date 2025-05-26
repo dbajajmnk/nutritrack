@@ -68,7 +68,9 @@ fun RegisterScreen(navController: NavHostController) {
         )
 
         Button(
-            onClick = { /* handle register */ },
+            onClick = {
+                navController.navigate("home")
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)

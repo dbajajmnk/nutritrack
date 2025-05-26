@@ -1,6 +1,5 @@
 package com.mahbeermohammed.fit2081nutritrack
 
-import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -9,7 +8,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.*
 import com.mahbeermohammed.fit2081nutritrack.components.BottomNavigationBar
 import com.mahbeermohammed.fit2081nutritrack.screens.*
@@ -29,7 +27,6 @@ fun NutriTrackApp() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    // Load CSV into Room only on first app launch
     LaunchedEffect(Unit) {
         val db = AppDatabase.getDatabase(context)
         val dao = db.patientDao()
@@ -69,7 +66,3 @@ fun NutriTrackApp() {
         }
     }
 }
-
-
-
-
