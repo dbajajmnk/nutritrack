@@ -59,7 +59,7 @@ fun NutriTrackApp() {
             composable("welcome") { WelcomeScreen(navController) }
             composable("login") { LoginScreen(navController) }
             composable("questionnaire") { QuestionnaireScreen(navController) }
-            composable("claim_account") { ClaimAccountScreen(navController) }
+            composable("register") { RegisterScreen(navController) }
 
             // BottomNav Screens
             composable("home") { HomeScreen(navController) }

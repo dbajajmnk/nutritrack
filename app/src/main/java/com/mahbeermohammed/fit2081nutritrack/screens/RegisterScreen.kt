@@ -13,12 +13,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun RegisterScreen(navController: NavHostController) {
     var userId by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var hasPassword by remember { mutableStateOf(true) }
-    var error by remember { mutableStateOf(false) }
+    var confirmPassword by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -28,7 +27,7 @@ fun LoginScreen(navController: NavHostController) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Log in",
+            text = "Register",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold
         )
@@ -40,21 +39,26 @@ fun LoginScreen(navController: NavHostController) {
             modifier = Modifier.fillMaxWidth()
         )
 
-        if (hasPassword) {
-            OutlinedTextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-                modifier = Modifier.fillMaxWidth()
-            )
-        } else {
-            OutlinedTextField(
-                value = phoneNumber,
-                onValueChange = { phoneNumber = it },
-                label = { Text("Phone Number") },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
+        OutlinedTextField(
+            value = phoneNumber,
+            onValueChange = { phoneNumber = it },
+            label = { Text("Phone Number") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = password,
+            onValueChange = { password = it },
+            label = { Text("Password") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = confirmPassword,
+            onValueChange = { confirmPassword = it },
+            label = { Text("Confirm Password") },
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Text(
             text = "This app is only for pre-registered users. Please enter\n" +
@@ -63,38 +67,28 @@ fun LoginScreen(navController: NavHostController) {
             fontSize = 14.sp
         )
 
-        if (error) {
-            Text(
-                text = "Invalid credentials",
-                color = MaterialTheme.colorScheme.error
-            )
-        }
-
         Button(
-            onClick = { /* Handle login */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-        ) {
-            Text("Continue")
-        }
-
-        Button(
-            onClick = {
-                navController.navigate("register")
-            },
+            onClick = { /* handle register */ },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(56.dp)
         ) {
             Text("Register")
         }
+
+        Button(
+            onClick = { navController.popBackStack() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
+            Text("Log in")
+        }
     }
 }
-
-
 @Preview(showBackground = true)
 @Composable
-fun PreviewLoginScreen() {
-    LoginScreen(navController = rememberNavController())
+fun PreviewRegisterScreen() {
+    // Provide a dummy NavController for preview
+    RegisterScreen(navController = rememberNavController())
 }
