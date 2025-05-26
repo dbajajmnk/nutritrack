@@ -11,7 +11,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.*
 import com.mahbeermohammed.fit2081nutritrack.components.BottomNavigationBar
 import com.mahbeermohammed.fit2081nutritrack.screens.*
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

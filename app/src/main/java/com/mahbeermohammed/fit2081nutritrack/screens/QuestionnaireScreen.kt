@@ -1,4 +1,4 @@
-package com.mahbeermohammed.fit2081nutritrack
+package com.mahbeermohammed.fit2081nutritrack.screens
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -15,7 +15,6 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import com.mahbeermohammed.fit2081nutritrack.AppDatabase
 import com.mahbeermohammed.fit2081nutritrack.FoodIntake
-import com.mahbeermohammed.fit2081nutritrack.FoodIntakeDao
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 
