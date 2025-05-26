@@ -1,6 +1,9 @@
 package com.mahbeermohammed.fit2081nutritrack
 
 import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
@@ -9,19 +12,22 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.mahbeermohammed.fit2081nutritrack.AppDatabase
-import com.mahbeermohammed.fit2081nutritrack.FoodIntake
 import kotlinx.coroutines.launch
+import java.io.File
+import java.io.FileOutputStream
 
 @Composable
 fun InsightsScreen(navController: NavController) {
     val context = LocalContext.current
+    val view = LocalView.current
     val db = AppDatabase.getDatabase(context)
     val dao = db.foodIntakeDao()
     val prefs = context.getSharedPreferences("NutriPrefs", Context.MODE_PRIVATE)
@@ -82,7 +88,12 @@ fun InsightsScreen(navController: NavController) {
             horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally)
         ) {
             Button(
-                onClick = { /* TODO: implement share logic */ },
+                onClick = {
+                    val bitmap = captureView(view)
+                    bitmap?.let {
+                        shareImage(context, it)
+                    }
+                },
                 modifier = Modifier.weight(1f)
             ) {
                 Icon(Icons.Default.Share, contentDescription = "Share")
@@ -105,6 +116,46 @@ fun InsightsScreen(navController: NavController) {
         ) {
             Text("Back to Home")
         }
+    }
+}
+
+private fun captureView(view: android.view.View): Bitmap? {
+    return try {
+        val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = android.graphics.Canvas(bitmap)
+        view.draw(canvas)
+        bitmap
+    } catch (e: Exception) {
+        e.printStackTrace()
+        null
+    }
+}
+
+private fun shareImage(context: Context, bitmap: Bitmap) {
+    try {
+        val cachePath = File(context.cacheDir, "images")
+        cachePath.mkdirs()
+        val file = File(cachePath, "shared_image.png")
+        FileOutputStream(file).use { out ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+        }
+
+        val contentUri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            file
+        )
+
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_STREAM, contentUri)
+            type = "image/png"
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        }
+
+        context.startActivity(Intent.createChooser(shareIntent, "Share your insights"))
+    } catch (e: Exception) {
+        e.printStackTrace()
     }
 }
 
