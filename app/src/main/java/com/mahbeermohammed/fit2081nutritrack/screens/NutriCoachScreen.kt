@@ -24,60 +24,81 @@ fun NutriCoachScreen(viewModel: NutriCoachViewModel = viewModel()) {
     val loading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
 
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-    ) {
-        Text(
-            "NutriCoach",
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-        Spacer(Modifier.height(32.dp))
-
-        Text(
-            "Fruitname",
-            fontWeight = FontWeight.SemiBold,
-            fontSize = 20.sp,
-        )
-        Spacer(Modifier.height(8.dp))
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+    Box(Modifier.fillMaxSize()) {
+        Column(
+            Modifier
+                .fillMaxWidth()
+                .padding(24.dp)
+                .align(Alignment.TopCenter)
         ) {
-            OutlinedTextField(
-                value = fruitName,
-                onValueChange = { fruitName = it },
-                modifier = Modifier.weight(1f),
-                placeholder = { Text("Enter fruit name") },
-                singleLine = true,
+            Text(
+                "NutriCoach",
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-            Spacer(Modifier.width(8.dp))
-            Button(
-                onClick = {
-                    if (fruitName.isNotBlank()) viewModel.fetchFruit(fruitName.trim())
-                },
-                modifier = Modifier.height(56.dp)
+            Spacer(Modifier.height(32.dp))
+
+            Text(
+                "Fruitname",
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 20.sp,
+            )
+            Spacer(Modifier.height(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(Icons.Default.Info, contentDescription = "Details")
-                Spacer(Modifier.width(4.dp))
-                Text("Details")
+                OutlinedTextField(
+                    value = fruitName,
+                    onValueChange = { fruitName = it },
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("Enter fruit name") },
+                    singleLine = true,
+                )
+                Spacer(Modifier.width(8.dp))
+                Button(
+                    onClick = {
+                        if (fruitName.isNotBlank()) viewModel.fetchFruit(fruitName.trim())
+                    },
+                    modifier = Modifier.height(56.dp)
+                ) {
+                    Icon(Icons.Default.Info, contentDescription = "Details")
+                    Spacer(Modifier.width(4.dp))
+                    Text("Details")
+                }
+            }
+
+            Spacer(Modifier.height(24.dp))
+
+            when {
+                loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
+                error != null -> Text(
+                    text = error ?: "",
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                fruitInfo != null -> {
+                    FruitInfoTable(fruitInfo!!)
+                    Spacer(Modifier.height(16.dp))
+                    Button(
+                        onClick = { /* TODO: Handle Motivational Message action */ },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text("Motivational Message (AI)")
+                    }
+                }
             }
         }
 
-        Spacer(Modifier.height(24.dp))
-
-        when {
-            loading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.CenterHorizontally))
-            error != null -> Text(
-                text = error ?: "",
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-            fruitInfo != null -> FruitInfoTable(fruitInfo!!)
+        FloatingActionButton(
+            onClick = { /* TODO: Handle show all tips action */ },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(16.dp)
+        ) {
+            Text("Show all tips")
         }
     }
 }
