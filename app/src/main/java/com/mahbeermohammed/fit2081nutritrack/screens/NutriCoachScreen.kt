@@ -3,6 +3,8 @@ package com.mahbeermohammed.fit2081nutritrack.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
@@ -15,16 +17,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.mahbeermohammed.fit2081nutritrack.MotivationalMessage
+import com.mahbeermohammed.fit2081nutritrack.data.FruitInfo
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
 fun NutriCoachScreen(viewModel: NutriCoachViewModel = viewModel()) {
     var fruitName by remember { mutableStateOf("") }
+    var showTipsDialog by remember { mutableStateOf(false) }
 
     val fruitInfo by viewModel.fruitInfo.collectAsState()
     val loading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
     val motivation by viewModel.motivation.collectAsState()
+    val allTips by viewModel.allTips.collectAsState()
+
+    LaunchedEffect(showTipsDialog) {
+        if (showTipsDialog) {
+            viewModel.loadAllTips()
+        }
+    }
 
     Box(Modifier.fillMaxSize()) {
         Column(
@@ -42,7 +57,7 @@ fun NutriCoachScreen(viewModel: NutriCoachViewModel = viewModel()) {
             Spacer(Modifier.height(32.dp))
 
             Text(
-                "Fruitname",
+                "Fruit name",
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 20.sp,
             )
@@ -107,16 +122,92 @@ fun NutriCoachScreen(viewModel: NutriCoachViewModel = viewModel()) {
         ExtendedFloatingActionButton(
             text = { Text("Show all tips") },
             icon = { Icon(Icons.Default.Done, contentDescription = "Done") },
-            onClick = { /* TODO */ },
+            onClick = { showTipsDialog = true },
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(16.dp)
         )
+
+        if (showTipsDialog) {
+            TipsDialog(
+                tips = allTips,
+                onDismiss = { showTipsDialog = false }
+            )
+        }
     }
 }
 
 @Composable
-fun FruitInfoTable(fruit: com.mahbeermohammed.fit2081nutritrack.data.FruitInfo) {
+fun TipsDialog(tips: List<MotivationalMessage>, onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(16.dp)
+            ) {
+                Text(
+                    text = "All Motivational Tips",
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                if (tips.isEmpty()) {
+                    Text(
+                        text = "No tips generated yet",
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier.padding(vertical = 16.dp)
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .heightIn(max = 400.dp)
+                    ) {
+                        items(tips) { tip ->
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 4.dp)
+                            ) {
+                                Column(modifier = Modifier.padding(12.dp)) {
+                                    Text(
+                                        text = tip.message,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+                                    Text(
+                                        text = SimpleDateFormat("MMM dd, HH:mm", Locale.getDefault())
+                                            .format(Date(tip.timestamp)),
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                        modifier = Modifier.padding(top = 4.dp)
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(
+                    onClick = onDismiss,
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    Text("Close")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun FruitInfoTable(fruit: FruitInfo) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
