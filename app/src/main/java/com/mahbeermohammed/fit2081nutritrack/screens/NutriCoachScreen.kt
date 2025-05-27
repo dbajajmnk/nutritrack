@@ -24,6 +24,7 @@ fun NutriCoachScreen(viewModel: NutriCoachViewModel = viewModel()) {
     val fruitInfo by viewModel.fruitInfo.collectAsState()
     val loading by viewModel.loading.collectAsState()
     val error by viewModel.error.collectAsState()
+    val motivation by viewModel.motivation.collectAsState()
 
     Box(Modifier.fillMaxSize()) {
         Column(
@@ -84,10 +85,20 @@ fun NutriCoachScreen(viewModel: NutriCoachViewModel = viewModel()) {
                     FruitInfoTable(fruitInfo!!)
                     Spacer(Modifier.height(16.dp))
                     Button(
-                        onClick = { /* TODO: Handle Motivational Message action */ },
+                        onClick = { viewModel.generateMotivation() },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text("Motivational Message (AI)")
+                    }
+                    motivation?.let {
+                        Spacer(Modifier.height(12.dp))
+                        Text(
+                            text = it,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color(0xFF388E3C),
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
                     }
                 }
             }
