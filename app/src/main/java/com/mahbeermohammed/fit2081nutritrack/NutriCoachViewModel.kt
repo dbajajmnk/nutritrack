@@ -36,7 +36,7 @@ class NutriCoachViewModel(application: Application) : AndroidViewModel(applicati
 
     private val generativeModel = GenerativeModel(
         modelName = "models/gemini-2.0-flash",
-        apiKey = "AIzaSyBE5fIB1uqV76LD5niUgRgYaGqBBjRa_1Y"
+        apiKey = ""
     )
 
     fun fetchFruit(name: String) {
